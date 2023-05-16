@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./App.css";
 
 function App() {
+  const [inputValue, setInputValue] = useState("");
+  const [response, setResponse] = useState(null);
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const fetchData = () => {
+    if (inputValue.length > 3) {
+      axios
+        .get(
+          `https://jsonplaceholder.typicode.com/comments?postId=${inputValue}`
+        )
+        .then((response) => {
+          setResponse(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="input-cont">
+      <input type="text" value={inputValue} onChange={handleInputChange} />
+      <button onClick={fetchData}>Fetch Data</button>
+      {response && (
+        <div className="response">
+          <h2>Response:</h2>
+          <pre>{JSON.stringify(response, null, 2)}</pre>
+        </div>
+      )}
     </div>
   );
 }
